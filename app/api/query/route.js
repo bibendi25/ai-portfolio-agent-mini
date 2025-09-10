@@ -84,8 +84,11 @@ export async function POST(req){
 
       const files = man.files.filter(p=>p.startsWith('projects/') && p.endsWith('.md'));
       const texts = await Promise.all(files.map(async p => ({ p, t: (await fetchText(origin,p)).toLowerCase() })));
-      const scored = texts.map(x=>({ score: top.reduce((s,k)=> s + (x.t.includes(k)?1:0),0), p:x.p }))
-                          .sort((a,b)=>b.score-a-score).slice(0,2);
+      const scored = texts
+  .map(x => ({ score: top.reduce((s,k)=> s + (x.t.includes(k)?1:0), 0), p: x.p }))
+  .sort((a,b)=> b.score - a.score)   // <- fixed here
+  .slice(0,2);
+
       const projNames = (scored.length ? scored : [{p:'HSBC Payments'},{p:'Mercedes-Benz IA'}])
         .map(s=> String(s.p).replace(/^projects\//,'').replace(/\.md$/,'').replace(/[-_]/g,' '))
         .join(', ');
