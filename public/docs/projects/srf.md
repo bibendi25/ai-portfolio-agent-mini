@@ -4,7 +4,7 @@ title: Swiss National Broadcaster (SRF)
 role: Senior IA & UX Architect
 ---
 
-## Thebrief
+## The brief
 SRF are the National TV and Radio Broadcaster for the German speaking part of Switzerland. I worked with
 Moving Brands agency as part of their team to review, research and redesign SRF’s entire online presence.
 
