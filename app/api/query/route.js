@@ -27,7 +27,7 @@ async function fetchText(origin, rel){
   return ct.includes('text') ? await r.text() : '';
 }
 
-export async function GET(req){ return POST(req); }
+export async function GET(req){ return POST(req); } // allow GET for quick tests
 
 export async function POST(req){
   try{
@@ -66,7 +66,8 @@ export async function POST(req){
       const hits = [];
       for(const {p,t} of texts){
         if(!t) continue;
-        for(const para of t.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean)){
+        const paras = t.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean);
+        for(const para of paras){
           const s = qTok.reduce((acc,k)=> acc + (para.toLowerCase().includes(k)?1:0), 0);
           if(s>0) hits.push({ score:s, p:para, source:p });
         }
@@ -84,8 +85,10 @@ export async function POST(req){
       const files = man.files.filter(p=>p.startsWith('projects/') && p.endsWith('.md'));
       const texts = await Promise.all(files.map(async p => ({ p, t: (await fetchText(origin,p)).toLowerCase() })));
       const scored = texts.map(x=>({ score: top.reduce((s,k)=> s + (x.t.includes(k)?1:0),0), p:x.p }))
-                          .sort((a,b)=>b.score-a.score).slice(0,2);
-      const projNames = scored.map(s=>s.p.replace(/^projects\/|\.md$/g,'').replace(/[-_]/g,' ')).join(', ') || 'HSBC Payments, Mercedes-Benz IA';
+                          .sort((a,b)=>b.score-a-score).slice(0,2);
+      const projNames = (scored.length ? scored : [{p:'HSBC Payments'},{p:'Mercedes-Benz IA'}])
+        .map(s=> String(s.p).replace(/^projects\//,'').replace(/\.md$/,'').replace(/[-_]/g,' '))
+        .join(', ');
 
       const bio114 = await fetchText(origin, 'bio/bio_114.md');
       const bio48  = await fetchText(origin, 'bio/bio_48.md');
@@ -97,13 +100,14 @@ export async function POST(req){
       );
 
       const note = [
-        `Hi — I’m Ed Birchmore, a senior UX consultant/architect with 27+ years across enterprise, finance, media and travel.`,
-        `Here’s why I’m a fit:`,
-        ``,
-        bullets, ``,
+        'Hi — I’m Ed Birchmore, a senior UX consultant/architect with 27+ years across enterprise, finance, media and travel.',
+        'Here’s why I’m a fit:',
+        '',
+        bullets,
+        '',
         `Selected work: ${projNames}`,
-        `Availability: contract or perm (flexible)`,
-        ``,
+        'Availability: contract or perm (flexible)',
+        '',
         `Short bio: ${(bio||'').slice(0,260)}…`
       ].join('\n');
 
@@ -132,23 +136,23 @@ export async function POST(req){
 
       const niceName = project.replace(/^projects\//,'').replace(/\.md$/,'').replace(/[-_]/g,' ');
       const caseMd = [
-        `# ${niceName}`,
-        ``,
-        `**Context**  `,
+        '# ' + niceName,
+        '',
+        '**Context**  ',
         context || '—',
-        ``,
-        `**Goal**  `,
+        '',
+        '**Goal**  ',
         (context.split('. ')[0] || '—'),
-        ``,
-        `**Approach**  `,
+        '',
+        '**Approach**  ',
         role || '—',
-        ``,
-        `**Results**  `,
+        '',
+        '**Results**  ',
         results || '—',
-        ``,
-        `**Your role**  `,
+        '',
+        '**Your role**  ',
         role || '—',
-        ``
+        ''
       ].join('\n');
 
       return NextResponse.json({ ok:true, md: caseMd });
