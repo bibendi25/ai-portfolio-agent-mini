@@ -45,7 +45,18 @@ export default function Page() {
           <h3>Ask about my work</h3>
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder={`e.g. "${tips[0]}"`} />
           <div className="btnRow">
-            <button className="btn primary" disabled={loadingAsk} onClick={async ()=>{ /* ... */ }}>
+            <button
+  type="button"
+  className="btn primary"
+  onClick={async ()=>{
+    try {
+      setLA(true);
+      const r = await api({ mode:'ask', q });
+      if (!r.ok) { console.error(r); alert(r.error || 'Error'); return; }
+      setHits(r.hits || []);
+    } finally { setLA(false); }
+  }}
+>
   {loadingAsk ? <span className="spinner" aria-hidden="true"></span> : 'Answer'}
 </button>
           </div>
@@ -62,7 +73,18 @@ export default function Page() {
           <h3>Tailored cover note</h3>
           <textarea value={jd} onChange={e=>setJd(e.target.value)} placeholder="Paste a job description here..." />
           <div className="btnRow">
-            <button className="btn primary" disabled={loadingCover} onClick={async ()=>{ /* ... */ }}>
+            <button
+  type="button"
+  className="btn primary"
+  onClick={async ()=>{
+    try {
+      setLC(true);
+      const r = await api({ mode:'cover', jd });
+      if (!r.ok) { console.error(r); alert(r.error || 'Error'); return; }
+      setNote(r.note || '');
+    } finally { setLC(false); }
+  }}
+>
   {loadingCover ? <span className="spinner" aria-hidden="true"></span> : 'Generate'}
 </button>
           </div>
@@ -77,7 +99,18 @@ export default function Page() {
             {projects.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
           <div className="btnRow">
-            <button className="btn primary" disabled={loadingCase} onClick={async ()=>{ /* ... */ }}>
+            <button
+  type="button"
+  className="btn primary"
+  onClick={async ()=>{
+    try {
+      setLCa(true);
+      const r = await api({ mode:'case', project: sel });
+      if (!r.ok) { console.error(r); alert(r.error || 'Error'); return; }
+      setMd(r.md || '');
+    } finally { setLCa(false); }
+  }}
+>
   {loadingCase ? <span className="spinner" aria-hidden="true"></span> : 'Create'}
 </button>
           </div>
