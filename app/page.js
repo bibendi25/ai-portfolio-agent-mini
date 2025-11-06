@@ -37,7 +37,7 @@ export default function Page() {
 
   return (
     <div className="container">
-      <h1>Talk to my work</h1>
+      <h1>Ask about my work</h1>
       <p className="muted">All answers cite only the files listed in Sources. No external data is used.</p>
 
       <div className="row">
